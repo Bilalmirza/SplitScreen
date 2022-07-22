@@ -66,13 +66,13 @@ bool HelloWorld::init()
     Player1->setPosition(winSize.width * 0.25f , winSize.height/2);
     Player1->setCameraMask((int)CameraFlag::USER5);
     Player1->setColor(Color3B::RED);
-    Player1->setScale(2.5);
+    Player1->setScale(4.5);
     
     Player2 = Sprite::create("CloseNormal.png");
     this->addChild(Player2);
     Player2->setPosition(winSize.width  * 0.75f , winSize.height/2);
     Player2->setCameraMask((int)CameraFlag::USER5);
-    Player2->setScale(2.5);
+    Player2->setScale(4.5);
     
     float fieldOfView = 60;
     Size frameSize = Director::getInstance()->getOpenGLView()->getFrameSize() * 2 ;
@@ -172,6 +172,8 @@ void HelloWorld::update(float dt)
     p2a += movePlayer2;
     Player1->setPosition(Player1->getPosition() + p1a);
     Player2->setPosition(Player2->getPosition() + p2a);
+    Player1->setRotation(90 +  CC_RADIANS_TO_DEGREES( atan2(p1a.y,p1a.x)) * -1);
+    Player2->setRotation(90 +  CC_RADIANS_TO_DEGREES( atan2(p2a.y,p2a.x)) * -1);
 
     const float distanceToSplit = 1000;
     Point pointToLookAt =  Player2->getPosition().getMidpoint(Player1->getPosition());
