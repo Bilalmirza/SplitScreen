@@ -40,7 +40,7 @@ camera1->setCameraFlag(CameraFlag::USER5);
 camera2 = Camera::createPerspective(fieldOfView, (GLfloat)frameSize.width/frameSize.height, 1, 12000);
 camera2->setCameraFlag(CameraFlag::USER5);
 ```
-Now we need a FBO and a render target. This allows the camera to render as a texture that we can use in a sprite.
+Now we need a FBO and a render target. This allows the camera to render as a texture that we can use in a sprite. This needs to be done on both cameras.
 ```
 auto fboSize = Size (Director::getInstance()->getOpenGLView()->getFrameSize().width,Director::getInstance()->getOpenGLView()->getFrameSize().height);
 auto fbo = new experimental::FrameBuffer;
@@ -69,7 +69,6 @@ playerScreen1->initWithTexture(fbo->getRenderTarget()->getTexture());
 this->addChild(playerScreen1);
 playerScreen1->setScale(frameSize.width/playerScreen1->getContentSize().width,frameSize.height/playerScreen1->getContentSize().height);
 playerScreen1->setTextureRect(Rect(0,0,fboSize.width/2,fboSize.height));
-playerScreen1->setFlippedY(true);
 playerScreen1->setAnchorPoint(Point::ANCHOR_MIDDLE_RIGHT);
 playerScreen1->setPosition(winSize.width/2,winSize.height/2);
 ```
@@ -83,19 +82,21 @@ Now that we have 2 screens, we want our cameras to look at the focus points, fol
 const float distanceToSplit = 900;
 Point pointToLookAt =  Player2->getPosition().getMidpoint(Player1->getPosition());
 float angle = Shared::calcAngle(Player::getInstance()->getPosition(),pointToLookAt) ;
-camera1>setPositionZ(3200); // whatever Position z you want
-camera2>setPositionZ(3200);
-camera->setRotation(angle);
+camera1->setPositionZ(3200); // whatever Position z you want
+camera2->setPositionZ(3200);
+camera1->setRotation(angle);
+camera2->setRotation(angle);
+
 playerScreen1->setRotation(angle);
 playerScreen2->setRotation(angle);
 if(Player1.distance(pointToLookAt) < distanceToSplit)
 {
  //combine screens
-camera1>setPosition(pointToLookAt);
-camera2>setPosition(pointToLookAt);
+camera1->setPosition(pointToLookAt);
+camera2->setPosition(pointToLookAt);
 }
 else{
-camera1>setPosition(pointToLookAt.x + (Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * cosf(CC_DEGREES_TO_RADIANS(camera1>getRotation() )),pointToLookAt.y +(Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * -sinf(CC_DEGREES_TO_RADIANS(camera1>getRotation() )));
+camera1->setPosition(pointToLookAt.x + (Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * cosf(CC_DEGREES_TO_RADIANS(camera1>getRotation() )),pointToLookAt.y +(Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * -sinf(CC_DEGREES_TO_RADIANS(camera1>getRotation() )));
 camera2->setPosition(pointToLookAt.x + (Player2->getPosition().distance(pointToLookAt) - distanceToSplit) * -cosf(CC_DEGREES_TO_RADIANS(camera2->getRotation() )),pointToLookAt.y +(Player2->getPosition().distance(pointToLookAt) - distanceToSplit) * sinf(CC_DEGREES_TO_RADIANS(camera2->getRotation() )));
 }
 ```
