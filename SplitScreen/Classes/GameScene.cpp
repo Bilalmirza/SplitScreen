@@ -22,7 +22,7 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "HelloWorldScene.h"
+#include "GameScene.h"
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
@@ -38,20 +38,20 @@ float calcAngle(cocos2d::Point p1, cocos2d::Point p2)
     
     return (degs );
 }
-Scene* HelloWorld::createScene()
+Scene* GameScene::createScene()
 {
-    return HelloWorld::create();
+    return GameScene::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
     printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in GameSceneScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool GameScene::init()
 {
  
     Size winSize = Director::getInstance()->getWinSize();
@@ -162,7 +162,7 @@ bool HelloWorld::init()
 
 
 
-void HelloWorld::update(float dt)
+void GameScene::update(float dt)
 {
 
     p1a *= 0.99;
@@ -174,8 +174,9 @@ void HelloWorld::update(float dt)
     Player2->setPosition(Player2->getPosition() + p2a);
     Player1->setRotation(90 +  CC_RADIANS_TO_DEGREES( atan2(p1a.y,p1a.x)) * -1);
     Player2->setRotation(90 +  CC_RADIANS_TO_DEGREES( atan2(p2a.y,p2a.x)) * -1);
-
-    const float distanceToSplit = 1000;
+  
+    
+    const float distanceToSplit = 2250;
     Point pointToLookAt =  Player2->getPosition().getMidpoint(Player1->getPosition());
     float angle = calcAngle(Player1->getPosition(),pointToLookAt);
    
@@ -187,22 +188,23 @@ void HelloWorld::update(float dt)
     if(Player1->getPosition().distance(pointToLookAt) < distanceToSplit)
     {
      //combine screens
-        
         camera1->setPosition(pointToLookAt);
         camera2->setPosition(pointToLookAt);
     }
     else{
-    camera1->setPosition(pointToLookAt.x + (Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * cosf(CC_DEGREES_TO_RADIANS(camera1->getRotation() )),pointToLookAt.y +(Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * -sinf(CC_DEGREES_TO_RADIANS(camera1->getRotation() )));
-    camera2->setPosition(pointToLookAt.x + (Player2->getPosition().distance(pointToLookAt) - distanceToSplit) * -cosf(CC_DEGREES_TO_RADIANS(camera2->getRotation() )),pointToLookAt.y +(Player2->getPosition().distance(pointToLookAt) - distanceToSplit) * sinf(CC_DEGREES_TO_RADIANS(camera2->getRotation() )));
+        Point CameraPositionA = Point( pointToLookAt.x + (Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * cosf(CC_DEGREES_TO_RADIANS(camera2->getRotation() )),pointToLookAt.y +(Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * -sinf(CC_DEGREES_TO_RADIANS(camera2->getRotation() )));
+        Point CameraPositionB = Point(pointToLookAt.x + (Player2->getPosition().distance(pointToLookAt) - distanceToSplit) * -cosf(CC_DEGREES_TO_RADIANS(camera1->getRotation() )),pointToLookAt.y +(Player2->getPosition().distance(pointToLookAt) - distanceToSplit) * sinf(CC_DEGREES_TO_RADIANS(camera1->getRotation() )));
+    camera2->setPosition(CameraPositionA);
+    camera1->setPosition(CameraPositionB);
     }
 
 }
 
 
-void HelloWorld::controls()
+void GameScene::controls()
 {
     
-    float speed = 0.5f;
+    float speed = 0.65f;
 
     auto keylistener = EventListenerKeyboard::create();
     keylistener->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event * event){

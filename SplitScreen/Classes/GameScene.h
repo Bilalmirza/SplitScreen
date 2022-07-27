@@ -26,9 +26,10 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include <spine/spine-cocos2dx.h>
 
 USING_NS_CC;
-class HelloWorld : public cocos2d::Scene
+class GameScene : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
@@ -58,7 +59,7 @@ public:
     Point p1a;
     Point p2a;
     void update(float dt);
-    CREATE_FUNC(HelloWorld);
+    CREATE_FUNC(GameScene);
 };
 
 #endif // __HELLOWORLD_SCENE_H__
