@@ -24,8 +24,11 @@
 
 #include "GameScene.h"
 #include "SimpleAudioEngine.h"
-
 USING_NS_CC;
+
+namespace {
+    bool ALLOW_DIVIDER = true;
+}
 float calcAngle(cocos2d::Point p1, cocos2d::Point p2)
 {
     
@@ -61,30 +64,30 @@ bool GameScene::init()
     bg->setScale(3);
     bg->setCameraMask((int)CameraFlag::USER5);
 
-    Player1 = Sprite::create("CloseNormal.png");
-    this->addChild(Player1);
-    Player1->setPosition(winSize.width * 0.25f , winSize.height/2);
-    Player1->setCameraMask((int)CameraFlag::USER5);
-    Player1->setColor(Color3B::RED);
-    Player1->setScale(4.5);
+    _player1 = Sprite::create("CloseNormal.png");
+    this->addChild(_player1);
+    _player1->setPosition(winSize.width * 0.25f , winSize.height/2);
+    _player1->setCameraMask((int)CameraFlag::USER5);
+    _player1->setColor(Color3B::RED);
+    _player1->setScale(4.5);
     
-    Player2 = Sprite::create("CloseNormal.png");
-    this->addChild(Player2);
-    Player2->setPosition(winSize.width  * 0.75f , winSize.height/2);
-    Player2->setCameraMask((int)CameraFlag::USER5);
-    Player2->setScale(4.5);
+    _player2 = Sprite::create("CloseNormal.png");
+    this->addChild(_player2);
+    _player2->setPosition(winSize.width  * 0.75f , winSize.height/2);
+    _player2->setCameraMask((int)CameraFlag::USER5);
+    _player2->setScale(4.5);
     
     float fieldOfView = 60;
     Size frameSize = Director::getInstance()->getOpenGLView()->getFrameSize() * 2 ;
     
-    camera1 = Camera::createPerspective(fieldOfView, (GLfloat)frameSize.width/frameSize.height, 1, 120000);
-    camera1->setCameraFlag(CameraFlag::USER5);
-    this->addChild(camera1);
-    camera2 = Camera::createPerspective(fieldOfView, (GLfloat)frameSize.width/frameSize.height, 1, 120000);
-    camera2->setCameraFlag(CameraFlag::USER5);
-    this->addChild(camera2);
-    camera1->setPositionZ(10000);
-    camera2->setPositionZ(10000);
+    _camera1 = Camera::createPerspective(fieldOfView, (GLfloat)frameSize.width/frameSize.height, 1, 120000);
+    _camera1->setCameraFlag(CameraFlag::USER5);
+    this->addChild(_camera1);
+    _camera2 = Camera::createPerspective(fieldOfView, (GLfloat)frameSize.width/frameSize.height, 1, 120000);
+    _camera2->setCameraFlag(CameraFlag::USER5);
+    this->addChild(_camera2);
+    _camera1->setPositionZ(10000);
+    _camera2->setPositionZ(10000);
     
     auto fboSize = Director::getInstance()->getOpenGLView()->getFrameSize();
 
@@ -103,16 +106,16 @@ bool GameScene::init()
     rtDS->release();
     
     
-    camera1->setFrameBufferObject(fbo);
+    _camera1->setFrameBufferObject(fbo);
         
-        playerScreen1 = Sprite::create();
-        playerScreen1->initWithTexture(fbo->getRenderTarget()->getTexture());
-        this->addChild(playerScreen1);
-        playerScreen1->setScale(frameSize.width/playerScreen1->getContentSize().width,frameSize.height/playerScreen1->getContentSize().height);
-        playerScreen1->setTextureRect(Rect(0,0,fboSize.width/2,fboSize.height));
-        playerScreen1->setAnchorPoint(Point::ANCHOR_MIDDLE_RIGHT);
-        playerScreen1->setPosition(winSize.width/2,winSize.height/2);
-        playerScreen1->setFlippedY(true);
+        _playerScreen1 = Sprite::create();
+        _playerScreen1->initWithTexture(fbo->getRenderTarget()->getTexture());
+        this->addChild(_playerScreen1);
+        _playerScreen1->setScale(frameSize.width/_playerScreen1->getContentSize().width,frameSize.height/_playerScreen1->getContentSize().height);
+        _playerScreen1->setTextureRect(Rect(0,0,fboSize.width/2,fboSize.height));
+        _playerScreen1->setAnchorPoint(Point::ANCHOR_MIDDLE_RIGHT);
+        _playerScreen1->setPosition(winSize.width/2,winSize.height/2);
+        _playerScreen1->setFlippedY(true);
 
     }
     {
@@ -130,28 +133,28 @@ bool GameScene::init()
     rtDS->release();
     
     
-    camera2->setFrameBufferObject(fbo);
+    _camera2->setFrameBufferObject(fbo);
         
         
-        playerScreen2 = Sprite::create();
-        playerScreen2->initWithTexture(fbo->getRenderTarget()->getTexture());
-        this->addChild(playerScreen2);
-        playerScreen2->setScale(frameSize.width/playerScreen2->getContentSize().width,frameSize.height/playerScreen2->getContentSize().height);
-        playerScreen2->setTextureRect(Rect(fboSize.width/2,0,fboSize.width/2,fboSize.height));
-        playerScreen2->setAnchorPoint(Point::ANCHOR_MIDDLE_LEFT);
-        playerScreen2->setPosition(winSize.width/2,winSize.height/2);
-        playerScreen2->setFlippedY(true);
-//        playerScreen2->setGLProgramState(GLProgramState::getOrCreateWithGLProgramName(GLProgram::SHADER_NAME_POSITION_GRAYSCALE));
+        _playerScreen2 = Sprite::create();
+        _playerScreen2->initWithTexture(fbo->getRenderTarget()->getTexture());
+        this->addChild(_playerScreen2);
+        _playerScreen2->setScale(frameSize.width/_playerScreen2->getContentSize().width,frameSize.height/_playerScreen2->getContentSize().height);
+        _playerScreen2->setTextureRect(Rect(fboSize.width/2,0,fboSize.width/2,fboSize.height));
+        _playerScreen2->setAnchorPoint(Point::ANCHOR_MIDDLE_LEFT);
+        _playerScreen2->setPosition(winSize.width/2,winSize.height/2);
+        _playerScreen2->setFlippedY(true);
+//        _playerScreen2->setGLProgramState(GLProgramState::getOrCreateWithGLProgramName(GLProgram::SHADER_NAME_POSITION_GRAYSCALE));
 
     }
- 
-//    playerScreen1->setColor(Color3B(35,35,35));
-//    playerScreen1->setVisible(false);
+
     
-  
-//    playerScreen2->setVisible(false);
+    _divider = Sprite::create("HelloWorld.png");
+    this->addChild(_divider,100);
+    _divider->setScale(0, 1000);
+    _divider->setPosition(winSize/2);
+    _divider->setColor(Color3B::BLACK);
     
- 
     controls();
     this->scheduleUpdate();
     
@@ -166,36 +169,42 @@ void GameScene::update(float dt)
 {
 
     p1a *= 0.99;
-    p1a += movePlayer1;
+    p1a += _movePlayer1;
     
     p2a *= 0.99;
-    p2a += movePlayer2;
-    Player1->setPosition(Player1->getPosition() + p1a);
-    Player2->setPosition(Player2->getPosition() + p2a);
-    Player1->setRotation(90 +  CC_RADIANS_TO_DEGREES( atan2(p1a.y,p1a.x)) * -1);
-    Player2->setRotation(90 +  CC_RADIANS_TO_DEGREES( atan2(p2a.y,p2a.x)) * -1);
+    p2a += _movePlayer2;
+    _player1->setPosition(_player1->getPosition() + p1a);
+    _player2->setPosition(_player2->getPosition() + p2a);
+    _player1->setRotation(90 +  CC_RADIANS_TO_DEGREES( atan2(p1a.y,p1a.x)) * -1);
+    _player2->setRotation(90 +  CC_RADIANS_TO_DEGREES( atan2(p2a.y,p2a.x)) * -1);
   
     
     const float distanceToSplit = 2250;
-    Point pointToLookAt =  Player2->getPosition().getMidpoint(Player1->getPosition());
-    float angle = calcAngle(Player1->getPosition(),pointToLookAt);
+    Point pointToLookAt =  _player2->getPosition().getMidpoint(_player1->getPosition());
+    float angle = calcAngle(_player1->getPosition(),pointToLookAt);
    
-    camera1->setRotation(angle);
-    camera2->setRotation(angle);
+    _camera1->setRotation(angle);
+    _camera2->setRotation(angle);
 
-    playerScreen1->setRotation(angle);
-    playerScreen2->setRotation(angle);
-    if(Player1->getPosition().distance(pointToLookAt) < distanceToSplit)
+    _playerScreen1->setRotation(angle);
+    _playerScreen2->setRotation(angle);
+    
+    _divider->setRotation(angle);
+    float divideWidth = clampf((_player1->getPosition().distance(pointToLookAt) - distanceToSplit)/3000,0,0.25f);
+    _divider->setScaleX(divideWidth);
+    if(_player1->getPosition().distance(pointToLookAt) < distanceToSplit)
     {
      //combine screens
-        camera1->setPosition(pointToLookAt);
-        camera2->setPosition(pointToLookAt);
+        _camera1->setPosition(pointToLookAt);
+        _camera2->setPosition(pointToLookAt);
     }
     else{
-        Point CameraPositionA = Point( pointToLookAt.x + (Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * cosf(CC_DEGREES_TO_RADIANS(camera2->getRotation() )),pointToLookAt.y +(Player1->getPosition().distance(pointToLookAt) - distanceToSplit) * -sinf(CC_DEGREES_TO_RADIANS(camera2->getRotation() )));
-        Point CameraPositionB = Point(pointToLookAt.x + (Player2->getPosition().distance(pointToLookAt) - distanceToSplit) * -cosf(CC_DEGREES_TO_RADIANS(camera1->getRotation() )),pointToLookAt.y +(Player2->getPosition().distance(pointToLookAt) - distanceToSplit) * sinf(CC_DEGREES_TO_RADIANS(camera1->getRotation() )));
-    camera2->setPosition(CameraPositionA);
-    camera1->setPosition(CameraPositionB);
+        Point CameraPositionA = Point( pointToLookAt.x + (_player1->getPosition().distance(pointToLookAt) - distanceToSplit) * cosf(CC_DEGREES_TO_RADIANS(_camera2->getRotation() )),pointToLookAt.y +(_player1->getPosition().distance(pointToLookAt) - distanceToSplit) * -sinf(CC_DEGREES_TO_RADIANS(_camera2->getRotation() )));
+        Point CameraPositionB = Point(pointToLookAt.x + (_player2->getPosition().distance(pointToLookAt) - distanceToSplit) * -cosf(CC_DEGREES_TO_RADIANS(_camera1->getRotation() )),pointToLookAt.y +(_player2->getPosition().distance(pointToLookAt) - distanceToSplit) * sinf(CC_DEGREES_TO_RADIANS(_camera1->getRotation() )));
+//        _camera2->setPosition(_camera2->getPosition().lerp(CameraPositionA,dt * 20000/_player1->getPosition().distance(pointToLookAt)));
+        
+        _camera2->setPosition(CameraPositionA);
+        _camera1->setPosition(CameraPositionB);
     }
 
 }
@@ -210,46 +219,46 @@ void GameScene::controls()
     keylistener->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event * event){
         if(keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW)
         {
-            movePlayer2.x -= speed;
+            _movePlayer2.x -= speed;
             
         }
         if(keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW)
         {
-            movePlayer2.x += speed;
+            _movePlayer2.x += speed;
             
         }
         
         if(keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW)
         {
-            movePlayer2.y += speed;
+            _movePlayer2.y += speed;
             
         }
         if(keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW)
         {
-            movePlayer2.y -= speed;
+            _movePlayer2.y -= speed;
             
         }
         
         
         if(keyCode == EventKeyboard::KeyCode::KEY_A)
         {
-            movePlayer1.x -= speed;
+            _movePlayer1.x -= speed;
             
         }
         if(keyCode == EventKeyboard::KeyCode::KEY_D)
         {
-            movePlayer1.x += speed;
+            _movePlayer1.x += speed;
             
         }
         
         if(keyCode == EventKeyboard::KeyCode::KEY_W)
         {
-            movePlayer1.y += speed;
+            _movePlayer1.y += speed;
             
         }
         if(keyCode == EventKeyboard::KeyCode::KEY_S)
         {
-            movePlayer1.y -= speed;
+            _movePlayer1.y -= speed;
             
         }
         
@@ -257,46 +266,46 @@ void GameScene::controls()
     keylistener->onKeyReleased = [=](EventKeyboard::KeyCode keyCode, Event * event){
         if(keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW)
         {
-            movePlayer2.x += speed;
+            _movePlayer2.x += speed;
             
         }
         if(keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW)
         {
-            movePlayer2.x -= speed;
+            _movePlayer2.x -= speed;
             
         }
         
         if(keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW)
         {
-            movePlayer2.y -= speed;
+            _movePlayer2.y -= speed;
             
         }
         if(keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW)
         {
-            movePlayer2.y += speed;
+            _movePlayer2.y += speed;
             
         }
         
         
         if(keyCode == EventKeyboard::KeyCode::KEY_A)
         {
-            movePlayer1.x += speed;
+            _movePlayer1.x += speed;
             
         }
         if(keyCode == EventKeyboard::KeyCode::KEY_D)
         {
-            movePlayer1.x -= speed;
+            _movePlayer1.x -= speed;
             
         }
         
         if(keyCode == EventKeyboard::KeyCode::KEY_W)
         {
-            movePlayer1.y -= speed;
+            _movePlayer1.y -= speed;
             
         }
         if(keyCode == EventKeyboard::KeyCode::KEY_S)
         {
-            movePlayer1.y += speed;
+            _movePlayer1.y += speed;
             
         }
         

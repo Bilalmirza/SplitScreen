@@ -40,19 +40,20 @@ public:
     
     // implement the "static create()" method manually
     
-    Sprite *Player1 = nullptr;
-    Sprite *Player2 = nullptr;
+    Sprite *_player1 = nullptr;
+    Sprite *_player2 = nullptr;
     
-    Camera *camera1 = nullptr;
-    Camera *camera2 = nullptr;
+    Camera *_camera1 = nullptr;
+    Camera *_camera2 = nullptr;
     
     
-    Sprite *playerScreen1 = nullptr;
-    Sprite *playerScreen2 = nullptr;
+    Sprite *_playerScreen1 = nullptr;
+    Sprite *_playerScreen2 = nullptr;
 
+    Sprite *_divider = nullptr;
     
-    Point movePlayer1 = Point::ZERO;
-    Point movePlayer2 = Point::ZERO;
+    Point _movePlayer1 = Point::ZERO;
+    Point _movePlayer2 = Point::ZERO;
     
     void controls();
     
